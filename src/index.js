@@ -1,17 +1,31 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import React from "react";
+import ReactDOM from "react-dom";
+import SeasonBckgrd from "./SeasonBckgrd.js";
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+class App extends React.Component {
+  constructor(prop) {
+    super(prop);
+    this.state = { lat: null, msg: "" };
+  }
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+  componentDidMount() {
+    window.navigator.geolocation.getCurrentPosition(
+      (position) => {
+        return this.setState({ lat: position.coords.latitude });
+      },
+      (err) => {
+        return this.setState({ msg: err.message });
+      }
+    );
+  }
+
+  render() {
+    if (this.state.lat && !this.state.msg)
+      return <SeasonBckgrd lattitude = {this.state.lat} />;
+    if (!this.state.lat && this.state.msg)
+      return <div>Error : {this.state.msg}</div>;
+    else return <div> Loading.... </div>;
+  }
+}
+
+ReactDOM.render(<App />, document.getElementById("root"));
